@@ -49,8 +49,22 @@ Choose File > Save in order to save the layout to txt (default: floor.txt)
 (NotImplemented)
 
 
+Example output
+---
+```
+   N;   N;   N;   N;   N;   N;   N;   N;   N;   N
+   N;   N;   N;   N;   N;   N;   N;   N;   N;   N
+   N;   N;   N;   N;   N;   N;   N;   N;   N;   N
+   N; W,N; W,N; W,N; W,N; W,N; W,N; W,N; W,N;   N
+   N;   N;   N; P,N; P,F;   F;   F; P,N; W,N;   N
+   N; W,N; W,N; P,N; P,F;   F;   F; P,N; W,N;   N
+   N;   N; W,N;   N;   F;   F;   F;   N; W,N;   N
+   N;   N; W,N; P,N;   N;   N;   N;   N; W,N;   N
+   N;   N; W,N;   N; W,N; W,N; W,N; W,N; W,N;   N
+   N;   N;   N;   N;   N;   N;   N;   N;   N;   N
+```
+
 
 This program is Free Software
-(C) 2019, Aalok S.
-
+(C) 2019
 
