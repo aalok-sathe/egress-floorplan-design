@@ -7,11 +7,12 @@ This program is Free Software
 Introduction
 ---
 A PySimpleGUI-based graphical grid that allows users to annotate locations for
-four kinds of terrains/members:
+many kinds of terrains/members:
     N (normal/none)
     F (fire/danger)
     P (people)
     W (wall)
+    S (safe zone)
 
 A square in the grid may be 
     0 or 1 of {N, F}
@@ -41,7 +42,7 @@ import argparse
 
 
 #class Grid:
-
+global mode, R, C
 mode = 'Walls'
 
 def setup(R, C):
@@ -61,12 +62,14 @@ def setup(R, C):
         '''
         short helper to create a button object with preset params
         '''
-        r = max(1, int(((R+C)/2)**.3))
+        r = max(1, int(((R+C)/2)**.1))
         a, b = R//2, C//2
-        if i in range(a-r, a+r+1) and j in range(b-r, b+r+1):
+        if i == 0 or i == R-1 or j == 0 or j == C-1:
+            return sg.Button('S', button_color=('white', 'lightgreen'), 
+                             size=(1, 1), key=(i, j), pad=(0, 0))
+        elif i in range(a-r, a+r) and j in range(b-r, b+r):
             return sg.Button('F', button_color=('white', 'red'), 
                              size=(1, 1), key=(i, j), pad=(0, 0))
-
         return sg.Button('N', button_color=('white', 'lightgrey'), size=(1, 1), 
                          key=(i, j), pad=(0, 0))
  
@@ -110,6 +113,10 @@ def click(window, event, values):
     
      
     if type(event) is tuple:
+        i, j = event
+        if i == 0 or i == R-1 or j == 0 or j == C-1:
+            print('Cannot alter safe zone! (Tried editing {})'.format((i,j)))
+            return
         square = window.Element(event)
         attrs = set(square.ButtonText.split(','))
 
