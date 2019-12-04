@@ -51,6 +51,11 @@ Choose File > Save in order to save the layout to txt (default: floor.txt)
 
 Example output
 ---
+Here's a 10x10 grid.
+
+![https://i.imgur.com/H9ZKEEE.png](https://i.imgur.com/H9ZKEEE.png)
+
+Below is the output created from this grid.
 ```
    N;   N;   N;   N;   N;   N;   N;   N;   N;   N
    N;   N;   N;   N;   N;   N;   N;   N;   N;   N
