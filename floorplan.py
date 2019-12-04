@@ -168,8 +168,8 @@ def click(window, event, values):
 
     elif event in ['Reset']:
         global R, C
-        for i in range(R):
-            for j in range(C):
+        for i in range(1, R-1):
+            for j in range(1, C-1):
                 square = window.Element((i,j))
                 square.Update('N', button_color=('white', 'lightgrey'))
 
