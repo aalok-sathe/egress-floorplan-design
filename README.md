@@ -8,6 +8,7 @@ four kinds of terrains/members:
   - F (fire/danger)
   - P (people)
   - W (wall)
+  - S (safe)
 
 A square in the grid may be 
     0 or 1 of {N, F}
