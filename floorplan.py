@@ -2,7 +2,6 @@
 
 '''
 This program is Free Software
-(C) 2019, Aalok S.
 
 Introduction
 ---
@@ -39,6 +38,13 @@ Choose File > Save in order to save the layout to txt (default: floor.txt)
 import PySimpleGUI as sg
 from random import randint
 import argparse
+from collections import defaultdict
+import pickle
+import pprint
+from functools import lru_cache
+
+
+pp = pprint.PrettyPrinter(indent=4)
 
 
 #class Grid:
@@ -54,7 +60,7 @@ def setup(R, C):
   
     menu_def = [['File', ['Reset', 'Open', 'Save', 'Exit']],      
                 ['Options', ['Editing mode', 
-                             ['Walls', 'People', 'Danger'], ]],      
+                             ['Walls', 'Bottleneck', 'Danger'], ]],      
                 ['Help', '(NotImplemented) About...'], ]
     layout += [[sg.Menu(menu_def, tearoff=True)]]
     
@@ -82,10 +88,135 @@ def setup(R, C):
     #    sg.SaveAs('Save'), sg.Cancel()
     #        ]
     #
-    #layout += [bottomrow]
+    layout += [[sg.Text('editing mode: {}'.format(mode), key='mode', 
+                        size=(30, 1))]]
 
     window = sg.Window('simulation floor layout designer', layout)
     return window
+
+
+def parsefloor(floor):
+    '''
+    method that takes a string representation of the grid and constructs a graph
+    useful for a simulation
+    '''
+    grid = []
+    for row in floor:
+        if not row: continue
+        sqs = row.split(';')
+        rowattrs = [set(sq.strip().split(',')) for sq in sqs]
+        print(rowattrs)
+        grid += [rowattrs]
+
+
+    graph = defaultdict(lambda: {'attrs': dict(), 'nbrs': set()})
+    meta = dict(bottleneck=set(), danger=set(), wall=set(), safe=set())
+
+    R, C = len(grid), len(grid[0])
+   
+    #@lru_cache(maxsize=None)
+    def distS(i, j, visited=set()):
+        '''
+        get the minimum distance from this node to the nearest safe zone
+        '''
+        print(i, j)
+        if (i, j) in visited: 
+            print('visited')
+            return float('inf')
+        if (not 0 <= i < R) or (not 0 <= j < C): return float('inf')
+
+        attrs = graph[(i, j)]['attrs']
+        print(i, j, attrs)
+        if attrs['S']: return 0 
+        if attrs['W']: return float('inf')
+
+        thisvisited = visited.union({(i, j)})
+
+        return 1 + min(
+                    distS(i-1, j, thisvisited),
+                    distS(i+1, j, thisvisited),
+                    distS(i, j-1, thisvisited),
+                    distS(i, j+1, thisvisited),
+                )
+   
+    #@lru_cache(maxsize=None)
+    def distF(i, j, visited=set()):
+        '''
+        get the minimum distance from this node to the nearest fire
+        '''
+        print(i, j)
+        if (i, j) in visited: 
+            print('visited')
+            return float('inf')
+        
+        if 0 <= i < R and 0 <= j < C:
+            pass
+        else:
+            return float('inf')
+
+        attrs = graph[(i, j)]['attrs']
+        print(i, j, attrs)
+        if attrs['F']: return 0 
+        if attrs['W']: return float('inf')
+
+        thisvisited = visited.union({(i, j)})
+
+        return 1 + min(
+                    distF(i-1, j, thisvisited),
+                    distF(i+1, j, thisvisited),
+                    distF(i, j-1, thisvisited),
+                    distF(i, j+1, thisvisited),
+                )
+ 
+
+    for i in range(R):
+        for j in range(C):
+            attrs = grid[i][j]
+            graph[(i,j)]['attrs'] = {att:int(att in attrs) for att in 'WSBFN'}
+            
+            for off in {-1, 1}:
+                if 0 <= i+off < R:
+                    graph[(i,j)]['nbrs'].add((i+off, j))
+
+                if 0 <= j+off < C:
+                    graph[(i,j)]['nbrs'].add((i, j+off))
+
+
+    def bfs(target, pos): # iterative dfs
+        print('target=', target, 'pos=', pos)
+        if graph[pos]['attrs']['W']: return float('inf')
+        q = [(pos, 0)]
+        visited = set()
+        while q:
+            print('='*79)
+            print(q)
+            node, dist = q.pop()
+            if node in visited: continue
+            visited.add(node)
+
+            node = graph[node]
+            if node['attrs']['W']: continue
+            if node['attrs'][target]: return dist
+
+            for n in node['nbrs']:
+                if n in visited: continue
+                q = [(n, dist+1)] + q
+            print(q)
+            print('='*79)
+
+        return float('inf')
+            
+    for i in range(R):
+        for j in range(C):
+            graph[(i,j)]['attrs']['distF'] = bfs('F', (i,j)) 
+            graph[(i,j)]['attrs']['distS'] = bfs('S', (i,j))
+
+     
+
+    graph = dict(graph.items())
+    pp.pprint(graph)
+    return graph
+
 
 
 def save(window):
@@ -102,8 +233,38 @@ def save(window):
         txts = ['{: >4}'.format(window.Element((i,j)).ButtonText) 
                 for j in range(C)]
         gridstr += ';'.join(txts) + '\n'
+
+    graph = parsefloor(gridstr.split('\n'))
+
+    with open(args.output+'.pkl', 'wb') as out:
+        pickle.dump(graph, file=out)
     with open(args.output, 'w') as out:
         print(gridstr, file=out)
+
+
+def load(window):
+    '''
+    loads from floor.txt.pkl
+    '''
+    with open(args.output+'.pkl', 'rb') as pklf:
+        graph = pickle.load(pklf)
+    
+    for loc, data in graph.items():
+        square = window.Element(loc)
+        attrs = {att for att in data['attrs'] if data['attrs'][att]}
+        attrs.intersection_update(set('WSFBN'))
+        if 'W' in attrs:
+            color = 'grey'
+        elif 'B' in attrs:
+            color = 'lightblue' if 'F' not in attrs else 'orange'
+        elif 'F' in attrs:
+            color = 'red'
+        elif 'S' in attrs:
+            color = 'lightgreen'
+        elif 'N' in attrs:
+            color = 'lightgrey'
+        square.Update(','.join(reversed(sorted(attrs))), 
+                      button_color=('white', color))
 
 def click(window, event, values):
     '''
@@ -132,15 +293,15 @@ def click(window, event, values):
                 color = 'grey'
                 attrs.add('W')
 
-        elif mode == 'People':
+        elif mode == 'Bottleneck':
             if 'W' in attrs:
-                print('Can\'t place a human in a wall!')
+                print('Can\'t place a bottleneck in a wall!')
                 return
-            elif 'P' in attrs:
-                attrs.remove('P')
+            elif 'B' in attrs:
+                attrs.remove('B')
                 color = 'red' if 'F' in attrs else 'lightgrey'
             else:
-                attrs.add('P')
+                attrs.add('B')
                 color = 'lightblue' if 'F' not in attrs else 'yellow'
 
         elif mode == 'Danger':
@@ -149,7 +310,7 @@ def click(window, event, values):
                 attrs.remove('F')
                 color = 'grey' if 'W' in attrs else 'lightgrey'
             else:
-                attrs.difference_update({'P', 'N'})
+                attrs.difference_update({'B', 'N'})
                 attrs.add('F')
                 color = 'orange' if 'W' in attrs else 'red'
 
@@ -162,15 +323,19 @@ def click(window, event, values):
     elif event == 'Cancel':
         raise SystemExit
     
-    elif event in ['Walls', 'People', 'Danger']:
+    elif event in ['Walls', 'Bottleneck', 'Danger']:
         #global mode
+        window.Element('mode').Update('editing mode: {}'.format(event))
         mode = event
 
-    elif event in ['Reset']:
+    elif event == 'Reset':
         for i in range(1, R-1):
             for j in range(1, C-1):
                 square = window.Element((i,j))
                 square.Update('N', button_color=('white', 'lightgrey'))
+
+    elif event == 'Open':
+        load(window)
 
     else:
         print('Unknown event:', event)
