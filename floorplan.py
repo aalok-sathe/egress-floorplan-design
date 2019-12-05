@@ -109,6 +109,7 @@ def click(window, event, values):
     '''
     handles a click event on a square in a grid
     '''
+    global mode, R, C
     print('clicked:', event, values)
     
      
@@ -120,7 +121,6 @@ def click(window, event, values):
         square = window.Element(event)
         attrs = set(square.ButtonText.split(','))
 
-        global mode
         if mode == 'Walls':
             if 'W' in attrs:
                 color = 'lightgrey' if 'F' not in attrs else 'red'
@@ -163,11 +163,10 @@ def click(window, event, values):
         raise SystemExit
     
     elif event in ['Walls', 'People', 'Danger']:
-        global mode
+        #global mode
         mode = event
 
     elif event in ['Reset']:
-        global R, C
         for i in range(1, R-1):
             for j in range(1, C-1):
                 square = window.Element((i,j))
