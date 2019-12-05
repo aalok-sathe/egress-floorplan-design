@@ -19,7 +19,9 @@ If nothing, a square must have at least the 'N' attribute
 The program outputs a graph as a pickled dictionary:
 ```python
 graph = {
-          (i,j): {'attrs': {'W': 0 or 1, 'N': 0 or 1, 'F': 0 or 1, ...}, 'nbrs': set},
+          (i,j): {'attrs': {'W': 0 or 1, 'N': 0 or 1, 'F': 0 or 1, ...,
+                            'distF': ..., 'distS': ...}, 
+                  'nbrs': set},
             .
             .
             .
