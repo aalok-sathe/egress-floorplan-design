@@ -6,20 +6,20 @@ A PySimpleGUI-based graphical grid that allows users to annotate locations for
 four kinds of terrains/members:
   - N (normal/none)
   - F (fire/danger)
-  - P (people)
+  - B (bottleneck)
   - W (wall)
   - S (safe)
 
 A square in the grid may be 
     0 or 1 of {N, F}
   AND 
-    0 or 1 of {W, P}
+    0 or 1 of {W, B}
 If nothing, a square must have at least the 'N' attribute
 
 The program outputs a graph as a pickled dictionary:
 ```python
 graph = {
-          (i,j): {'attrs': {'W': 0 or 1, 'N': 0 or 1, 'F': 0 or 1, ...,
+          (i,j): {'attrs': {'W': 0 or 1, 'N': 0 or 1, 'F': 0 or 1, 'B': 0 or 1, 'S': 0 or 1,
                             'distF': ..., 'distS': ...}, 
                   'nbrs': set},
             .
