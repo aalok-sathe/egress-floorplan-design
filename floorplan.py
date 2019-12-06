@@ -46,7 +46,7 @@ from functools import lru_cache
 
 pp = pprint.PrettyPrinter(indent=4)
 
-class Grid:
+class FloorGUI:
 
     def __init__(self, R, C, output):
         self.mode = 'Walls'
@@ -321,7 +321,7 @@ def main(args):
     R, C = args.rows, args.cols
     assert 1 < R <= 20 and  1 < C <= 20, 'rows and columns must be 1< x <=20'
 
-    grid = Grid(R, C, args.output) 
+    grid = FloorGUI(R, C, args.output) 
     window = grid.setup()
         
     while True:
