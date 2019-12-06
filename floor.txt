@@ -1,8 +1,9 @@
-   S;   S;   S;   S;   S;   S;   S
-   S; W,N; W,N; W,N; W,N; W,N;   S
-   S; W,N;   N;   F;   N; N,B;   S
-   S; W,N;   N; W,N;   N; W,N;   S
-   S; W,N;   N;   N;   N; W,N;   S
-   S; W,N; N,B; W,N; W,N; W,N;   S
-   S;   S;   S;   S;   S;   S;   S
+   S;   S;   S;   S;   S;   S;   S;   S
+   S;   W;   W;   W;   W;   W;   W;   S
+   S;   W;   N;   N;   P;   P;   W;   S
+   S;   B;   N;   F;   P;   P;   W;   S
+   S;   W;   N;   F;   P;   P;   W;   S
+   S;   W;   N;   N;   P;   P;   W;   S
+   S;   W;   W;   W;   W;   W;   W;   S
+   S;   S;   S;   S;   S;   S;   S;   S
 

@@ -66,7 +66,7 @@ class Grid:
       
         menu_def = [['File', ['Reset', 'Open', 'Save', 'Exit']],      
                     ['Options', ['Editing mode', 
-                                 ['Walls', 'Bottleneck', 'Danger'], ]],      
+                                 ['Walls', 'Bottleneck', 'Danger', 'People'],]],
                     ['Help', '(NotImplemented) About...'], ]
         layout += [[sg.Menu(menu_def, tearoff=True)]]
         
@@ -115,7 +115,7 @@ class Grid:
             grid += [rowattrs]
 
 
-        graph = defaultdict(lambda: {'attrs': dict(), 'nbrs': set()})
+        graph = defaultdict(lambda: {'nbrs': set()})
         meta = dict(bottleneck=set(), danger=set(), wall=set(), safe=set())
 
         R, C = len(grid), len(grid[0])
@@ -123,7 +123,7 @@ class Grid:
         for i in range(R):
             for j in range(C):
                 attrs = grid[i][j]
-                graph[(i,j)]['attrs'] = {att:int(att in attrs) for att in 'WSBFN'}
+                graph[(i,j)].update({att:int(att in attrs) for att in 'WSBFNP'})
                 
                 for off in {-1, 1}:
                     if 0 <= i+off < R:
@@ -134,7 +134,7 @@ class Grid:
 
 
         def bfs(target, pos): # iterative dfs
-            if graph[pos]['attrs']['W']: return float('inf')
+            if graph[pos]['W']: return float('inf')
             q = [(pos, 0)]
             visited = set()
             while q:
@@ -143,8 +143,8 @@ class Grid:
                 visited.add(node)
 
                 node = graph[node]
-                if node['attrs']['W']: continue
-                if node['attrs'][target]: return dist
+                if node['W']: continue
+                if node[target]: return dist
 
                 for n in node['nbrs']:
                     if n in visited: continue
@@ -154,8 +154,8 @@ class Grid:
                 
         for i in range(R):
             for j in range(C):
-                graph[(i,j)]['attrs']['distF'] = bfs('F', (i,j)) 
-                graph[(i,j)]['attrs']['distS'] = bfs('S', (i,j))
+                graph[(i,j)]['distF'] = bfs('F', (i,j)) 
+                graph[(i,j)]['distS'] = bfs('S', (i,j))
 
          
         self.graph = dict(graph.items())
@@ -193,20 +193,20 @@ class Grid:
         self.graph = graph 
         for loc, data in self.graph.items():
             square = window.Element(loc)
-            attrs = {att for att in data['attrs'] if data['attrs'][att]}
-            attrs.intersection_update(set('WSFBN'))
+            attrs = {att for att in data if att is not 'nbrs' and data[att]}
+            attrs.intersection_update(set('WSFBNP'))
             if 'W' in attrs:
-                color = 'grey'
+                color = 'grey' if 'F' not in attrs else 'yellow'
             elif 'B' in attrs:
                 color = 'lightblue' if 'F' not in attrs else 'orange'
             elif 'F' in attrs:
                 color = 'red'
             elif 'S' in attrs:
-                color = 'lightgreen'
+                color = 'lightgreen' 
+            elif 'P' in attrs:
+                color = 'purple' if 'F' not in attrs else 'pink'
             elif 'N' in attrs:
                 color = 'lightgrey'
-            elif 'P' in attrs:
-                color = 'purple'
             square.Update(','.join(reversed(sorted(attrs))), 
                           button_color=('white', color))
 
@@ -240,12 +240,14 @@ class Grid:
                 if 'W' in attrs:
                     color = 'lightgrey' if 'F' not in attrs else 'red'
                     attrs.remove('W')
+                    if 'F' not in attrs: attrs.add('N') 
                 elif 'F' in attrs:
                     color = 'orange'
                     attrs.add('W')
                 else:
                     color = 'grey'
                     attrs.add('W')
+                    attrs.discard('N')
 
             elif mode == 'Bottleneck':
                 if 'W' in attrs:
@@ -253,10 +255,25 @@ class Grid:
                     return
                 elif 'B' in attrs:
                     attrs.remove('B')
+                    if 'F' not in attrs: attrs.add('N') 
                     color = 'red' if 'F' in attrs else 'lightgrey'
                 else:
                     attrs.add('B')
+                    attrs.discard('N')
                     color = 'lightblue' if 'F' not in attrs else 'yellow'
+
+            elif mode == 'People':
+                if 'W' in attrs:
+                    print('Can\'t place a person in a wall!')
+                    return
+                elif 'P' in attrs:
+                    attrs.remove('P')
+                    if 'F' not in attrs: attrs.add('N') 
+                    color = 'red' if 'F' in attrs else 'lightgrey'
+                else:
+                    attrs.add('P')
+                    attrs.discard('N')
+                    color = 'purple' if 'F' not in attrs else 'pink'
 
             elif mode == 'Danger':
                 if 'F' in attrs:
@@ -268,6 +285,8 @@ class Grid:
                     attrs.add('F')
                     color = 'orange' if 'W' in attrs else 'red'
 
+
+
             square.Update(','.join(reversed(sorted(attrs))), 
                           button_color=('white', color))
 
@@ -277,7 +296,7 @@ class Grid:
         elif event == 'Cancel':
             raise SystemExit
         
-        elif event in ['Walls', 'Bottleneck', 'Danger']:
+        elif event in ['Walls', 'Bottleneck', 'Danger', 'People']:
             #global mode
             window.Element('mode').Update('editing mode: {}'.format(event))
             self.mode = event
