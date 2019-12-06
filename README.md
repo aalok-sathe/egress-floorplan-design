@@ -66,20 +66,20 @@ Example output
 ---
 Here's a 10x10 grid.
 
-![https://i.imgur.com/H9ZKEEE.png](https://i.imgur.com/H9ZKEEE.png)
+![https://i.imgur.com/sVlF2tm.png](https://i.imgur.com/sVlF2tm.png)
 
 Below is the output created from this grid.
 ```
-   N;   N;   N;   N;   N;   N;   N;   N;   N;   N
-   N;   N;   N;   N;   N;   N;   N;   N;   N;   N
-   N;   N;   N;   N;   N;   N;   N;   N;   N;   N
-   N; W,N; W,N; W,N; W,N; W,N; W,N; W,N; W,N;   N
-   N;   N;   N; P,N; P,F;   F;   F; P,N; W,N;   N
-   N; W,N; W,N; P,N; P,F;   F;   F; P,N; W,N;   N
-   N;   N; W,N;   N;   F;   F;   F;   N; W,N;   N
-   N;   N; W,N; P,N;   N;   N;   N;   N; W,N;   N
-   N;   N; W,N;   N; W,N; W,N; W,N; W,N; W,N;   N
-   N;   N;   N;   N;   N;   N;   N;   N;   N;   N
+   S;   S;   S;   S;   S;   S;   S;   S;   S;   S
+   S;   N; W,N; W,N; W,N; W,N; N,B; W,N;   N;   S
+   S; W,N; W,N;   N;   N;   N;   N; W,N;   N;   S
+   S; W,N;   N;   N;   N;   N;   N; W,N;   N;   S
+   S; W,N;   N;   N;   F;   F;   N; W,N;   N;   S
+   S; N,B;   N;   N;   F;   F;   N; W,N;   N;   S
+   S; W,N;   N;   N;   N;   N;   N; W,N;   N;   S
+   S; W,N; W,N;   N;   N;   N; W,N; W,N;   N;   S
+   S;   N; W,N; W,N; W,N; W,N; W,N;   N;   N;   S
+   S;   S;   S;   S;   S;   S;   S;   S;   S;   S
 ```
 
 
