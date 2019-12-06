@@ -48,11 +48,11 @@ pp = pprint.PrettyPrinter(indent=4)
 
 class Grid:
 
-    def __init__(self, R, C, args):
+    def __init__(self, R, C, output):
         self.mode = 'Walls'
         self.R = R
         self.C = C
-        self.args = args
+        self.output = output
         self.window = None
         self.graph = None
 
@@ -167,7 +167,7 @@ class Grid:
         saves the current layout to a text file for use by a simulation program
         (or just for your own viewing pleasure)
         '''
-        print('saving to', self.args.output)
+        print('saving to', self.output)
         window = self.window
         R, C = self.R, self.C
 
@@ -179,9 +179,9 @@ class Grid:
 
         graph = self.parse(gridstr.split('\n'))
 
-        with open(args.output+'.pkl', 'wb') as out:
+        with open(self.output+'.pkl', 'wb') as out:
             pickle.dump(graph, file=out)
-        with open(args.output, 'w') as out:
+        with open(self.output, 'w') as out:
             print(gridstr, file=out)
 
 
@@ -214,7 +214,7 @@ class Grid:
     def loadtxt(self):
         '''
         '''
-        with open(self.args.output+'.pkl', 'rb') as pklf:
+        with open(self.output+'.pkl', 'rb') as pklf:
             graph = pickle.load(pklf)
         self.load(graph) 
 
@@ -321,7 +321,7 @@ def main(args):
     R, C = args.rows, args.cols
     assert 1 < R <= 20 and  1 < C <= 20, 'rows and columns must be 1< x <=20'
 
-    grid = Grid(R, C, args) 
+    grid = Grid(R, C, args.output) 
     window = grid.setup()
         
     while True:
