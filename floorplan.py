@@ -48,7 +48,7 @@ pp = pprint.PrettyPrinter(indent=4)
 
 class FloorGUI:
 
-    def __init__(self, R, C, output):
+    def __init__(self, R, C, output=None):
         self.mode = 'Walls'
         self.R = R
         self.C = C
