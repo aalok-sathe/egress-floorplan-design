@@ -1,14 +1,15 @@
-# floorplan
+# evacuation floorplan design
 
 Introduction
 ---
 A PySimpleGUI-based graphical grid that allows users to annotate locations for
-four kinds of terrains/members:
+various kinds of terrains/members:
   - N (normal/none)
   - F (fire/danger)
-  - B (bottleneck)
+  - B (bottleneck--e.g., exit)
   - W (wall)
   - S (safe)
+  - P (people)
 
 A square in the grid may be 
     0 or 1 of {N, F}
@@ -19,8 +20,8 @@ If nothing, a square must have at least the 'N' attribute
 The program outputs a graph as a pickled dictionary:
 ```python
 graph = {
-          (i,j): {'attrs': {'W': 0 or 1, 'N': 0 or 1, 'F': 0 or 1, 'B': 0 or 1, 'S': 0 or 1,
-                            'distF': ..., 'distS': ...}, 
+          (i,j): {'W': 0 or 1, 'N': 0 or 1, 'F': 0 or 1, 'B': 0 or 1, 'S': 0 or 1,
+                            'distF': ..., 'distS': ..., 
                   'nbrs': set},
             .
             .
@@ -56,15 +57,15 @@ To annotate a square, click on a square in the grid. Click again to undo.
 To choose the attribute you wish to annotate with using Options > Editing mode.
 
 3. Save to file
-Choose File > Save in order to save the layout to txt (default: floor.txt)
+Choose File > Save in order to save the layout to pickle (default: floor.txt.pkl)
 
 4. Load and edit existing file
-(NotImplemented)
+Click on Menu > Open (from floor.txt.pkl)
 
 
 Example output
 ---
-Here's a 10x10 grid.
+Here's a sample 10x10 grid.
 
 ![https://i.imgur.com/sVlF2tm.png](https://i.imgur.com/sVlF2tm.png)
 
@@ -85,4 +86,3 @@ Below is the output created from this grid.
 
 This program is Free Software
 (C) 2019
-
