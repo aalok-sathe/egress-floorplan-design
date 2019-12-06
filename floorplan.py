@@ -250,8 +250,8 @@ class Grid:
                     attrs.discard('N')
 
             elif mode == 'Bottleneck':
-                if 'W' in attrs:
-                    print('Can\'t place a bottleneck in a wall!')
+                if 'W' in attrs or 'P' in attrs:
+                    print('Can\'t place a bottleneck in a wall or people!')
                     return
                 elif 'B' in attrs:
                     attrs.remove('B')
@@ -263,8 +263,8 @@ class Grid:
                     color = 'lightblue' if 'F' not in attrs else 'yellow'
 
             elif mode == 'People':
-                if 'W' in attrs:
-                    print('Can\'t place a person in a wall!')
+                if 'W' in attrs or 'B' in attrs:
+                    print('Can\'t place a person in a wall or bottleneck!')
                     return
                 elif 'P' in attrs:
                     attrs.remove('P')
