@@ -143,7 +143,7 @@ class FloorGUI:
                 visited.add(node)
 
                 node = graph[node]
-                if node['W']: continue
+                if node['W'] or node['F']: continue
                 if node[target]: return dist
 
                 for n in node['nbrs']:
@@ -157,8 +157,8 @@ class FloorGUI:
                 graph[(i,j)]['distF'] = bfs('F', (i,j)) 
                 graph[(i,j)]['distS'] = bfs('S', (i,j))
 
-         
         self.graph = dict(graph.items())
+        pp.pprint(self.graph) 
         return self.graph
 
 
